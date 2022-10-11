@@ -4,32 +4,28 @@ import { GoSearch } from "react-icons/go";
 import { AiOutlineClose } from "react-icons/ai";
 
 import { IconContext } from "react-icons";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { filterData, Search } from "../../services/api";
 
-type Search = {
-  id: number;
-  title: string;
-};
-
-type SearchBarProps = {
-  data: Search[];
-};
-
-const SearchBar: React.FC<SearchBarProps> = ({ data }) => {
+const SearchBar: React.FC = () => {
   const [inputSearch, setInputSearch] = useState("");
   const [filterSearch, setFilterSearch] = useState<Search[]>([]);
 
-  const handleFilter = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInputSearch(event.target.value);
-
-    const newFilter = data.filter((value) => {
-      return value.title
-        .toLowerCase()
-        .includes(inputSearch.toLowerCase().trim());
-    });
-
-    setFilterSearch(newFilter);
-  };
+  const handleFilter = useCallback(
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (event.target.value.length === 0) return clearText();
+      setInputSearch(event.target.value);
+      if (event.target.value.length < 3) return;
+      console.log(event.target.value);
+      const result = await filterData(event.target.value);
+      try {
+        setFilterSearch(result);
+      } catch (error) {
+        alert("Something went wrong, try again later");
+      }
+    },
+    []
+  );
 
   useEffect(() => {
     if (inputSearch === "") {
@@ -88,7 +84,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ data }) => {
 
       {filterSearch.length !== 0 && (
         <div className="dataResult">
-          {filterSearch.slice(0, 15).map((value) => (
+          {filterSearch.map((value) => (
             <div
               key={value.id}
               className="dataItem"

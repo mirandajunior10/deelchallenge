@@ -1,12 +1,12 @@
 import React from "react";
 import SearchBar from "./Components/SearchBar";
-import Users from "./db.json";
+
 import "./App.css";
 
 function App() {
   return (
     <div>
-      <SearchBar data={Users} />
+      <SearchBar />
     </div>
   );
 }
